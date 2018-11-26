@@ -1,12 +1,13 @@
 # GraphQL API
 
-## Install
-
-Clone the repository to your computer and move into the root directory, then install the dependencies.
+## Spin up Dev Environment
 
 ```sh
-npm install
+vagrant up
+vagrant ssh
 ```
+
+The Application is located in `/var/www`.
 
 Run the server in development mode.
 
@@ -42,9 +43,9 @@ Now that the temporary credentials have been added to the environment, run the f
 
 `aws ecr get-login --no-include-email`
 
-Copy the output of that command and paste it into the terminal and execute. You should receive confirmation that Docker was successfully logged into the Container Registry.
+**Copy the output of that command and paste it into the terminal and execute**. You should receive confirmation that Docker was successfully logged into the Container Registry.
 
-### Step 3 - build the Docker image, tag it latest, and push to repository
+### Step 3 - build the Docker image, tag it latest, and push to Container Repository.
 
 `docker build -t tf-b2c-graphql .`
 
