@@ -64,3 +64,6 @@ sudo chown -R $USER:$(id -gn $USER) /home/vagrant/.config
 
 cd /var/www
 npm install
+
+# Copy environment file from example if it doesn't already exist
+cp -n .env.example .env
