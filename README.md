@@ -15,7 +15,7 @@ Run the server in development mode.
 npm run dev
 ```
 
-While in development mode; the app will listen for changes and reload automatically.
+While in development mode the app will listen for changes and reload automatically.
 
 ## Automated Deployment
 
