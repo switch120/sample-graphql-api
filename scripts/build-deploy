@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+echo "Starting Container Image Build ..."
+
+# Read in the .env file so we can access the build-time environment vars
+export $(grep -v '^#' .env | xargs -d '\n')
+
+# Build the local image
+docker build -t $ECS_BUILD_TAG .
+
+# Tag the local build image
+docker tag $ECS_BUILD_TAG:latest $ECS_REGISTRY_URL:latest
+
+echo "Pushing to Container Service ..."
+
+# Push the image to container registry
+docker push $ECS_REGISTRY_URL:latest
+
+echo "Deployment Complete!"

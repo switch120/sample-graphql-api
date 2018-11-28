@@ -1,5 +1,4 @@
-import jwt from 'jsonwebtoken';
-import { ProductRec, ProductRecFitSize } from './product-rec.model';
+import { ProductRec } from './product-rec.model';
 
 /**
  * Export a string which contains our GraphQL type definitions.
@@ -16,7 +15,12 @@ export const productRecTypeDefs = `
   }
 
   type ProductRecFitSize {
-    size: String!
+    id: String!
+    label: String!
+    localeCode: String!
+    secondLabel: String
+    sizeType: String!
+    system: String!
   }
 
   input ProductRecFilterInput {
@@ -28,7 +32,12 @@ export const productRecTypeDefs = `
   }
 
   input ProductRecFitSizeInput {
-    size: String
+    id: String!
+    label: String!
+    localeCode: String!
+    secondLabel: String
+    sizeType: String!
+    system: String!
   }
 
   # Extending the root Query type.
@@ -62,7 +71,6 @@ export const productRecTypeDefs = `
 export const productRecResolvers: any = {
   Query: {
     async recommendations(_, { filter = {}, options = {} }) {
-      console.log(filter);
       const recs: any[] = await ProductRec.find(filter, null, options);
       return recs.map(rec => rec.toGraph());
     },

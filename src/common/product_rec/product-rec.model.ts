@@ -3,7 +3,12 @@ import { toGraphCallback } from '../utilities';
 
 // Stub
 const fitSizeSchema = new mongoose.Schema({
-  size: String
+  id: String!,
+  label: String!,
+  localeCode: String!,
+  secondLabel: String,
+  sizeType: String!,
+  system: String!,
 });
 
 const productRecSchema = new mongoose.Schema({

@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# Read in the .env file so we can access the build-time environment vars
+export $(grep -v '^#' .env | xargs -d '\n')
+
+if [[ (-z "$IAM_ACCESS_KEY") || (-z "$IAM_SECRET_KEY") ]]; then
+    echo "ERROR: .env file missing IAM_ACCESS_KEY or IAM_SECRET_KEY"
+    echo "Add these entries to the .env file and try again."
+    exit 1
+fi
+
+echo "Starting container deployment ..."
+
+# Need a valid generated token
+echo "Enter Authenticator Token (optional if authed recently):"
+read authKey
+
+# authKey is optional - can bypass if already authed by not passing in a new token
+if [ $authKey ]; then
+    # Set these first for personal identification - will be overridden by temporary access credentials
+    export AWS_ACCESS_KEY_ID=$IAM_ACCESS_KEY
+    export AWS_SECRET_ACCESS_KEY=$IAM_SECRET_KEY
+
+    # Have to clear this or the call will fail if it already exists
+    export AWS_SESSION_TOKEN=""
+
+    # Request temporary access credentials
+    credentials=$(aws sts get-session-token --serial-number "$MFA_IAM_ARN" --token-code "$authKey")
+
+    # Parse out credential data with jq
+    secret=$(jq -r '.Credentials.SecretAccessKey' <<< "$credentials")
+    token=$(jq -r '.Credentials.SessionToken' <<< "$credentials")
+    keyId=$(jq -r '.Credentials.AccessKeyId' <<< "$credentials")
+
+    # Set identity environment vars
+    export AWS_ACCESS_KEY_ID=$keyId
+    export AWS_SECRET_ACCESS_KEY=$secret
+    export AWS_SESSION_TOKEN=$token
+
+    # Request an ECR login string, and immediately execute to log Docker into the ECR
+    eval $(aws ecr get-login --no-include-email)
+
+elif [ -z "$AWS_SESSION_TOKEN" ]; then
+    echo "ERROR: No stored Session Token found ... aborting!"
+    echo "Please provide a new Authenticator Token to Authenticate with the Container Registry"
+    exit 1
+fi
+
+echo "AWS Authentication and Registry login complete."

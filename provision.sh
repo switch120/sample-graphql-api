@@ -15,7 +15,7 @@ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubun
 sudo apt-get update
 
 # Install utilities and Mongo
-sudo apt-get install -y build-essential unzip git mongodb-org memcached
+sudo apt-get install -y build-essential unzip git mongodb-org memcached jq
 
 # Set Mongo to start on boot
 sudo systemctl enable mongod.service
@@ -67,3 +67,6 @@ npm install
 
 # Copy environment file from example if it doesn't already exist
 cp -n .env.example .env
+
+# Build scripts need to be executable
+chmod 774 ./scripts/*

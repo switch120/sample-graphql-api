@@ -17,7 +17,15 @@ npm run dev
 
 While in development mode; the app will listen for changes and reload automatically.
 
-## Deployment
+## Automated Deployment
+
+Enter the appropriate values into the `.env` for AWS IAM access and ECR. Once those are in place, run the npm command to deploy:
+
+`npm run deploy`
+
+This process will run the steps below, but should it fail you may need to do them manually to debug. Once this has finished, move on to **Step 4** below to finalize the deployment in the container environment.
+
+## Manual Deployment
 
 ### Step 1 - setup personal AWS credentials
 
@@ -26,7 +34,7 @@ Run `aws configure` and enter in your personal Access Key and Secret Key. This s
 ### Step 2 - temporary access credentials
 To deploy the app to AWS Container service, you must first obtain a temporary set of 2FA access credentials. To do this, run the following command:
 
-`aws sts get-session-token --serial-number [your-device-arn-from-iam-console] --token-code  [valid-generated-auth-token]`
+`aws sts get-session-token --serial-number [your-device-arn-from-iam-mfa-console] --token-code  [valid-generated-auth-token]`
 
 This will produce a JSON object with credentials that need to be exported into environment variables like so:
 
@@ -36,14 +44,14 @@ export AWS_SECRET_ACCESS_KEY=[generated-key]
 export AWS_SESSION_TOKEN=[generated-token]
 ```
 
-> Note: you can run `aws configure` again and enter in the new values, however doing it this way **will save your permanant credentials**, and only clear the temporary on reboot, so next time you can skip right to **Step 2**.
+> Note: you can run `aws configure` again and enter in the new values, however doing it this way **will retain your permanant credentials**, and only clear the temporary on reboot, so next time you can skip right to the end of this step.
 
 ### Step 3 - generate Docker login command
 Now that the temporary credentials have been added to the environment, run the following command to generate a Docker Login string that will log you into the AWS Container Registry:
 
-`aws ecr get-login --no-include-email`
+`eval $(aws ecr get-login --no-include-email)`
 
-**Copy the output of that command and paste it into the terminal and execute**. You should receive confirmation that Docker was successfully logged into the Container Registry.
+You should receive confirmation that Docker was successfully logged into the Container Registry.
 
 ### Step 3 - build the Docker image, tag it latest, and push to Container Repository.
 
@@ -70,18 +78,39 @@ query GetRecommendations {
     category
     styleId
     rankId
-    fitSize { size }
+    fitSize { 
+      id
+      label
+      sizeType
+    }
   }
   recommendation ( profileId: "<PROFILE_ID_HERE>" ) {
     _id
     category
     styleId
     rankId
-    fitSize { size }
+    fitSize { 
+      id
+      label
+      sizeType
+    }
   }
 }
 mutation AddRecommendation {
-  addRecommendation(input: { profileId: "<PROFILE_ID_HERE>", category: "Tops", styleId: "<STYLE_ID>", rankId: "<RANK_ID>", fitSize: { size: "Large" } }) {
+  addRecommendation(input: { 
+    profileId: "<PROFILE_ID_HERE>", 
+    category: "Tops", 
+    styleId: "<STYLE_ID>", 
+    rankId: "<RANK_ID>", 
+    fitSize: { 
+      id: "test-id-123",
+      label: "fit-size-label",
+      localeCode: "en-US",
+      secondLabel: "",
+      sizeType: "Regular",
+      system: "system-value"
+    } 
+  }) {
     _id
   }
 }

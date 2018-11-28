@@ -14,9 +14,7 @@
     "normalize": "npm run format && npm run lint",
     "format": "prettier --write --loglevel=warn 'src/**/*.ts'",
     "lint": "tslint src/**/*.ts",
-    "deploy": "npm run deploy:dev && npm run deploy:prod",
-    "deploy:dev": "npm run compile && now --local-config=now.dev.json && now alias --local-config=now.dev.json",
-    "deploy:prod": "npm run compile && now --local-config=now.prod.json && now alias --local-config=now.prod.json"
+    "deploy": "./scripts/docker-login && ./scripts/build-deploy"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.1",
