@@ -55,9 +55,9 @@ You should receive confirmation that Docker was successfully logged into the Con
 
 ### Step 3 - build the Docker image, tag it latest, and push to Container Repository.
 
-`docker build -t tf-b2c-graphql .`
+`docker build -t graphql .`
 
-`docker tag tf-b2c-graphql:latest [repository-uri]/[repository-name]:latest`
+`docker tag graphql:latest [repository-uri]/[repository-name]:latest`
 
 `docker push [repository-uri]/[repository-name]:latest`
 
@@ -66,52 +66,3 @@ Create a new revision of the **ECS Task**, but retain all settings and save.
 
 ## Step 5 
 Open up the running cluster and edit the running service. Select the latest revision of the currently running task, and check the `Force Deployment` checkbox, then save. This will kickoff an ECS deployment of the latest pushed Image. When submitted, click `View Service`, then the Deployments tab will show the current deployment spinning down and the new one spinning up. Deployment is complete when the new deployments "Pending" count is zero, and "Running" count is non zero.
-
-## Examples
-
-Here are some example queries which you can use as a starting point when using the playground.
-
-```graphql
-query GetRecommendations {
-  recommendations (filter: { profileId: "<PROFILE_ID_HERE>" }) {
-    _id
-    category
-    styleId
-    rankId
-    fitSize { 
-      id
-      label
-      sizeType
-    }
-  }
-  recommendation ( profileId: "<PROFILE_ID_HERE>" ) {
-    _id
-    category
-    styleId
-    rankId
-    fitSize { 
-      id
-      label
-      sizeType
-    }
-  }
-}
-mutation AddRecommendation {
-  addRecommendation(input: { 
-    profileId: "<PROFILE_ID_HERE>", 
-    category: "Tops", 
-    styleId: "<STYLE_ID>", 
-    rankId: "<RANK_ID>", 
-    fitSize: { 
-      id: "test-id-123",
-      label: "fit-size-label",
-      localeCode: "en-US",
-      secondLabel: "",
-      sizeType: "Regular",
-      system: "system-value"
-    } 
-  }) {
-    _id
-  }
-}
-```
